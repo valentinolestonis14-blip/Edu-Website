@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Entrepreneur | From Student to Earner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        cyberDark: '#050816',
+                        panelDark: '#0f172a',
+                        cardDark: '#111827',
+                        accentSky: '#38bdf8',
+                        accentBlue: '#60a5fa',
+                        accentPurple: '#8b5cf6',
+                        premiumGold: '#facc15',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050816;
+            color: #f8fafc;
+        }
+        /* Glassmorphism Stylesheet Overrides */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card-hover {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-6px);
+            background: rgba(17, 24, 39, 0.65);
+            border-color: rgba(56, 189, 248, 0.35);
+            box-shadow: 0 0 40px rgba(56, 189, 248, 0.15);
+        }
+        .neon-text-glow {
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.5), 0 0 40px rgba(139, 92, 246, 0.3);
+        }
+        .neon-border-glow:focus-within {
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.25);
+        }
+        /* Custom Modern Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050816;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38bdf8;
+        }
+    </style>
+</head>
+<body x-data="applicationEngine()" class="antialiased min-h-screen relative overflow-x-hidden">
+
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,#1e1b4b_0%,transparent_50%)] pointer-events-none z-0"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,#0f172a_0%,transparent_50%)] pointer-events-none z-0"></div>
+
+    <nav class="sticky top-0 z-50 w-full glass-panel border-b border-white/5 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-400 via-blue-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg">
+                    OE
+                </div>
+                <div>
+                    <span class="font-display font-extrabold text-xl tracking-tight block bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                        ONLINE ENTREPRENEUR
+                    </span>
+                    <span class="text-[10px] uppercase tracking-widest text-premiumGold font-bold block -mt-1">
+                        From Student to Earner
+                    </span>
+                </div>
+            </div>
+
+            <div class="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-400">
+                <a href="#home" class="hover:text-accentSky transition-colors">Home</a>
+                <a href="#search" class="hover:text-accentSky transition-colors">Search Schools</a>
+                <a href="#quick-access" class="hover:text-accentSky transition-colors">SHS Strands</a>
+                <a href="#quick-access" class="hover:text-accentSky transition-colors">Academic Tracks</a>
+                <a href="#quick-access" class="hover:text-accentSky transition-colors">College Courses</a>
+                <a href="#ai-match" class="hover:text-accentSky transition-colors">Career Guide</a>
+                <a href="#stats" class="hover:text-accentSky transition-colors">Scholarships</a>
+                <a href="#footer" class="hover:text-accentSky transition-colors">About</a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <template x-if="userProfile.isAuthenticated">
+                    <div class="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-2xl border border-white/5">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-xs font-bold text-slate-200" x-text="userProfile.name"></p>
+                            <p class="text-[10px] text-premiumGold capitalize font-medium" x-text="userProfile.role"></p>
+                        </div>
+                        <button @click="logoutUser()" class="p-2 hover:bg-red-500/20 rounded-xl text-slate-400 hover:text-red-400 transition-all">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </template>
+
+                <template x-if="!userProfile.isAuthenticated">
+                    <div class="flex items-center gap-2">
+                        <button @click="triggerAuthMock('student')" class="text-xs font-semibold text-slate-400 hover:text-white px-4 py-2 transition-all">Login</button>
+                        <button @click="triggerAuthMock('admin')" class="relative group overflow-hidden rounded-xl p-[1px] focus:outline-none">
+                            <span class="absolute inset-0 bg-gradient-to-r from-sky-400 via-blue-500 to-purple-600 rounded-xl"></span>
+                            <div class="px-4 py-2 bg-cyberDark rounded-[11px] relative group-hover:bg-transparent transition-colors duration-300 flex items-center gap-2">
+                                <i data-lucide="shield" class="w-3.5 h-3.5 text-accentSky group-hover:text-white"></i>
+                                <span class="text-xs font-semibold text-white">Admin Access</span>
+                            </div>
+                        </button>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-32 relative z-10">
+        
+        <section id="home" class="text-center max-w-4xl mx-auto space-y-6 pt-4">
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight font-display">
+                Find Your Future <br>
+                <span class="bg-gradient-to-r from-sky-400 via-blue-400 to-purple-500 bg-clip-text text-transparent inline-block font-black uppercase tracking-wide">
+                    School, Strand, and Career Path
+                </span>
+            </h1>
+            <p class="text-base sm:text-xl text-slate-400 max-w-2xl mx-auto font-medium">
+                Search schools, strands, tracks, and college programs nationwide in one powerful platform.
+            </p>
+        </section>
+
+        <section id="search" class="max-w-3xl mx-auto space-y-6">
+            <div class="relative rounded-3xl glass-panel p-2 neon-border-glow border-white/10 focus-within:border-sky-500/40 transition-all">
+                <div class="flex items-center gap-4 px-4 py-2">
+                    <i data-lucide="search" class="text-accentSky w-6 h-6 animate-pulse"></i>
+                    <input 
+                        type="text"
+                        x-model="searchQuery"
+                        @input="executeSearchPipeline()"
+                        placeholder="Search School, Strand, Academic Track, TESDA Program, or College Course..."
+                        class="w-full bg-transparent border-none outline-none text-white placeholder-slate-500 text-sm sm:text-lg py-2 font-medium"
+                    >
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-2 text-xs font-semibold text-slate-400">
+                <span class="text-premiumGold uppercase tracking-wider text-[10px]">Try Searching:</span>
+                <template x-for="example in searchExamples" :key="example">
+                    <button 
+                        @click="searchQuery = example; executeSearchPipeline();"
+                        class="bg-white/5 border border-white/5 hover:border-sky-400/30 hover:bg-sky-500/10 px-3 py-1.5 rounded-xl transition-all"
+                        x-text="example"
+                    ></button>
+                </template>
+            </div>
+
+            <div class="space-y-4 pt-6">
+                <template x-if="hasSearched && filteredSchools.length === 0">
+                    <div class="text-center p-12 glass-panel rounded-3xl border border-dashed border-white/10">
+                        <p class="text-slate-400 font-medium">No system records matched your database parameters. Try general terms like "STEM" or "RTU".</p>
+                    </div>
+                </template>
+
+                <template x-for="school in filteredSchools" :key="school.id">
+                    <div class="glass-panel p-6 sm:p-8 rounded-[24px] border border-white/10 relative overflow-hidden group hover:border-sky-500/30 transition-all duration-300">
+                        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-6 relative z-10">
+                            <div class="space-y-4 flex-1">
+                                <div>
+                                    <span class="inline-block bg-sky-500/10 text-accentSky text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md border border-sky-400/20 mb-2" x-text="school.type + ' Institution'"></span>
+                                    <h3 class="text-xl sm:text-2xl font-bold text-white tracking-tight" x-text="school.name"></h3>
+                                    <p class="text-slate-400 text-xs flex items-center gap-1.5 mt-1 font-medium">
+                                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-accentPurple"></i>
+                                        <span x-text="school.city + ', ' + school.province + ' (' + school.region + ')'"></span>
+                                    </p>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                    <div>
+                                        <h4 class="text-[11px] font-bold uppercase tracking-wider text-premiumGold mb-1.5">Available SHS Strands & Tracks</h4>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <template x-for="strand in school.strands" :key="strand">
+                                                <span class="bg-white/5 border border-white/5 text-[11px] font-bold px-2.5 py-0.5 rounded-md text-slate-300" x-text="strand"></span>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-[11px] font-bold uppercase tracking-wider text-accentSky mb-1.5">Available College Courses</h4>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <template x-for="course in school.courses" :key="course">
+                                                <span class="bg-blue-500/5 border border-blue-500/10 text-[11px] font-bold px-2.5 py-0.5 rounded-md text-sky-300" x-text="course"></span>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex sm:flex-col items-stretch gap-2 min-w-[160px] justify-end">
+                                <a :href="school.website" target="_blank" class="flex items-center justify-center gap-1.5 text-center px-4 py-2.5 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-bold text-white border border-white/10 transition-all">
+                                    <i data-lucide="globe" class="w-3.5 h-3.5"></i> Visit School Website
+                                </a>
+                                <button @click="alert('Loading Complete Institutional Matrix Data Portfolio...')" class="flex items-center justify-center gap-1.5 text-center px-4 py-2.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:opacity-90 shadow-lg rounded-xl text-xs font-bold text-white transition-all">
+                                    View Details <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </section>
+
+        <section id="quick-access" class="space-y-8">
+            <div class="text-center space-y-2">
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white font-display">Accelerated Discovery Hubs</h2>
+                <p class="text-slate-400 text-sm max-w-xl mx-auto">Direct pipeline pathways into our structural smart-search filtering engines.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="glass-panel p-6 rounded-[28px] glass-card-hover flex flex-col justify-between group">
+                    <div>
+                        <div class="w-12 h-12 bg-sky-500/10 border border-sky-400/20 rounded-2xl flex items-center justify-center mb-4 text-accentSky">
+                            <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-3 font-display">🎓 SHS STRANDS</h3>
+                        <div class="flex flex-wrap gap-1.5 mb-6">
+                            <template x-for="s in ['STEM', 'ABM', 'HUMSS', 'GAS', 'TVL', 'Arts & Design', 'Sports']" :key="s">
+                                <button @click="searchQuery = s; executeSearchPipeline();" class="text-[11px] font-bold bg-white/5 hover:bg-sky-500/20 text-slate-300 hover:text-accentSky px-2.5 py-1 rounded-md transition-all" x-text="s"></button>
+                            </template>
+                        </div>
+                    </div>
+                    <button @click="searchQuery = 'STEM'; executeSearchPipeline();" class="w-full text-center py-2.5 bg-white/5 group-hover:bg-sky-500/10 text-xs font-bold text-accentSky rounded-xl border border-white/5 group-hover:border-sky-500/20 transition-all">Explore Strands</button>
+                </div>
+
+                <div class="glass-panel p-6 rounded-[28px] glass-card-hover flex flex-col justify-between group">
+                    <div>
+                        <div class="w-12 h-12 bg-purple-500/10 border border-purple-400/20 rounded-2xl flex items-center justify-center mb-4 text-accentPurple">
+                            <i data-lucide="layers" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-3 font-display">🏫 ACADEMIC TRACKS</h3>
+                        <div class="flex flex-wrap gap-1.5 mb-6">
+                            <template x-for="t in ['Academic', 'TVL', 'Sports', 'Arts & Design']" :key="t">
+                                <button @click="searchQuery = t; executeSearchPipeline();" class="text-[11px] font-bold bg-white/5 hover:bg-purple-500/20 text-slate-300 hover:text-accentPurple px-2.5 py-1 rounded-md transition-all" x-text="t"></button>
+                            </template>
+                        </div>
+                    </div>
+                    <button @click="searchQuery = 'Academic'; executeSearchPipeline();" class="w-full text-center py-2.5 bg-white/5 group-hover:bg-purple-500/10 text-xs font-bold text-accentPurple rounded-xl border border-white/5 group-hover:border-purple-500/20 transition-all">View Tracks</button>
+                </div>
+
+                <div class="glass-panel p-6 rounded-[28px] glass-card-hover flex flex-col justify-between group">
+                    <div>
+                        <div class="w-12 h-12 bg-amber-500/10 border border-amber-400/20 rounded-2xl flex items-center justify-center mb-4 text-premiumGold">
+                            <i data-lucide="book-open" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-3 font-display">💼 COLLEGE COURSES</h3>
+                        <div class="flex flex-wrap gap-1.5 mb-6">
+                            <template x-for="c in ['BSIT', 'BSCS', 'Nursing', 'Engineering', 'Education', 'Accountancy', 'Criminology']" :key="c">
+                                <button @click="searchQuery = c; executeSearchPipeline();" class="text-[11px] font-bold bg-white/5 hover:bg-amber-500/20 text-slate-300 hover:text-premiumGold px-2.5 py-1 rounded-md transition-all" x-text="c"></button>
+                            </template>
+                        </div>
+                    </div>
+                    <button @click="searchQuery = 'BSIT'; executeSearchPipeline();" class="w-full text-center py-2.5 bg-white/5 group-hover:bg-amber-500/10 text-xs font-bold text-premiumGold rounded-xl border border-white/5 group-hover:border-amber-500/20 transition-all">Browse Courses</button>
+                </div>
+
+                <div class="glass-panel p-6 rounded-[28px] glass-card-hover flex flex-col justify-between group border-amber-500/20 bg-gradient-to-b from-slate-900 via-[#0f172a] to-amber-950/20">
+                    <div>
+                        <div class="w-12 h-12 bg-gradient-to-tr from-amber-400 to-yellow-600 rounded-2xl flex items-center justify-center mb-4 text-black font-black">
+                            <i data-lucide="sparkles" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 font-display">🚀 CAREER MATCH</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-6">
+                            Discover the ideal secondary strand and college degree mapped smoothly around your unique personal and logical skills.
+                        </p>
+                    </div>
+                    <a href="#ai-match" class="w-full text-center py-2.5 bg-gradient-to-r from-amber-400 to-yellow-500 hover:opacity-90 text-xs font-bold text-black rounded-xl shadow-lg transition-all">Start Assessment</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-accentSky">
+                    <i data-lucide="school" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white font-display">Find Schools</h3>
+                <p class="text-slate-400 text-xs leading-relaxed">Search structural historical school profiles nationwide with unified secondary track indices.</p>
+            </div>
+            <div class="space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-accentSky">
+                    <i data-lucide="git-compare" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white font-display">Compare Programs</h3>
+                <p class="text-slate-400 text-xs leading-relaxed">Cross-examine curriculum variations and systemic institutional department statistics cleanly.</p>
+            </div>
+            <div class="space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-accentSky">
+                    <i data-lucide="trending-up" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white font-display">Career Planning</h3>
+                <p class="text-slate-400 text-xs leading-relaxed">Access direct occupational recommendations aligned with your prospective field of study.</p>
+            </div>
+            <div class="space-y-3">
+                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-accentSky">
+                    <i data-lucide="award" class="w-5 h-5"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white font-display">Scholarship Finder</h3>
+                <p class="text-slate-400 text-xs leading-relaxed">Uncover active structural financial grants, localized allowances, and institutional tuition waivers.</p>
+            </div>
+        </section>
+
+        <section id="stats" class="glass-panel rounded-[32px] p-8 sm:p-12 border border-white/5 grid grid-cols-2 lg:grid-cols-4 gap-8 text-center relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-transparent pointer-events-none"></div>
+            <div>
+                <p class="text-3xl sm:text-4xl lg:text-5xl font-black font-display text-white neon-text-glow">50,000+</p>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mt-1">Students Helped</p>
+            </div>
+            <div>
+                <p class="text-3xl sm:text-4xl lg:text-5xl font-black font-display text-accentSky neon-text-glow">1,500+</p>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mt-1">Schools Listed</p>
+            </div>
+            <div>
+                <p class="text-3xl sm:text-4xl lg:text-5xl font-black font-display text-accentPurple neon-text-glow">300+</p>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mt-1">Courses Available</p>
+            </div>
+            <div>
+                <p class="text-3xl sm:text-4xl lg:text-5xl font-black font-display text-premiumGold neon-text-glow">95%</p>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mt-1">Student Satisfaction</p>
+            </div>
+        </section>
+
+        <section id="ai-match" class="max-w-3xl mx-auto glass-panel p-8 sm:p-12 rounded-[32px] border border-white/10 relative">
+            <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-sky-400 to-purple-500 text-black font-black text-[10px] tracking-widest uppercase px-4 py-1 rounded-full shadow-lg">
+                Interactive Assessment Module
+            </div>
+            
+            <div class="space-y-6">
+                <div class="text-center space-y-2">
+                    <h3 class="text-2xl font-bold text-white font-display">Career Match Questionnaire</h3>
+                    <p class="text-xs text-slate-400 max-w-md mx-auto">Answer the simple metrics below to run our algorithmic career-mapping script.</p>
+                </div>
+
+                <div x-show="aiStep === 1" class="space-y-4">
+                    <label class="block text-sm font-bold text-premiumGold uppercase tracking-wider text-center">What subjects do you enjoy?</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <template x-for="sub in ['Math', 'Science', 'Business', 'Technology', 'Writing', 'Arts']" :key="sub">
+                            <button 
+                                @click="aiSubject = sub; aiStep = 2;"
+                                class="p-4 bg-white/5 border border-white/5 hover:border-sky-400/40 hover:bg-sky-500/10 rounded-2xl font-semibold text-sm transition-all"
+                                x-text="sub"
+                            ></button>
+                        </template>
+                    </div>
+                </div>
+
+                <div x-show="aiStep === 2" class="space-y-4" x-cloak>
+                    <label class="block text-sm font-bold text-premiumGold uppercase tracking-wider text-center">What career interests you?</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <template x-for="interest in getInterestOptions()" :key="interest.id">
+                            <button 
+                                @click="aiInterest = interest.id; calculateAiMatrix();"
+                                class="p-4 bg-white/5 border border-white/5 hover:border-purple-400/40 hover:bg-purple-500/10 rounded-2xl font-semibold text-sm text-left transition-all flex justify-between items-center"
+                            >
+                                <span x-text="interest.label"></span>
+                                <i data-lucide="arrow-right" class="w-4 h-4 text-slate-500"></i>
+                            </button>
+                        </template>
+                    </div>
+                    <div class="pt-4 flex justify-start">
+                        <button @click="aiStep = 1" class="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1">
+                            <i data-lucide="arrow-left" class="w-3 h-3"></i> Back
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="aiStep === 3" class="space-y-6 bg-white/5 p-6 rounded-2xl border border-white/10" x-cloak>
+                    <h4 class="text-center font-bold text-lg text-emerald-400 flex items-center justify-center gap-2">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i> Profile Alignment Formulated
+                    </h4>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex flex-col sm:flex-row sm:justify-between border-b border-white/5 pb-2 gap-1">
+                            <span class="text-slate-400 font-medium">Recommended Strand:</span>
+                            <span class="font-bold text-white" x-text="aiOutput.strand"></span>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:justify-between border-b border-white/5 pb-2 gap-1">
+                            <span class="text-slate-400 font-medium">Recommended Track:</span>
+                            <span class="font-bold text-white" x-text="aiOutput.track"></span>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:justify-between border-b border-white/5 pb-2 gap-1">
+                            <span class="text-slate-400 font-medium">Recommended Course:</span>
+                            <span class="font-bold text-accentSky" x-text="aiOutput.course"></span>
+                        </div>
+                        <div class="pt-2">
+                            <span class="text-slate-400 font-medium block mb-2">Recommended Matching Schools:</span>
+                            <div class="flex flex-wrap gap-2">
+                                <template x-for="sch in aiOutput.schools" :key="sch">
+                                    <span class="bg-purple-500/20 text-purple-300 text-xs font-bold px-3 py-1 rounded-lg border border-purple-500/20" x-text="sch"></span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button @click="resetAiEngine()" class="w-full py-2.5 bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 rounded-xl transition-all border border-white/5">
+                        Run Alternative Iteration
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div x-show="adminPanelOpen" class="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-xl flex items-center justify-center p-4" x-cloak>
+        <div class="w-full max-w-4xl bg-panelDark rounded-[32px] border border-white/10 p-6 sm:p-8 space-y-6 relative overflow-hidden shadow-2xl">
+            <div class="flex items-center justify-between border-b border-white/5 pb-4">
+                <div class="flex items-center gap-2 text-accentPurple">
+                    <i data-lucide="shield" class="w-5 h-5"></i>
+                    <h2 class="text-xl font-bold text-white font-display tracking-tight">Infrastructure Management Console</h2>
+                </div>
+                <button @click="adminPanelOpen = false" class="text-slate-400 hover:text-white font-bold text-sm">Close Console</button>
+            </div>
+
+            <div class="flex gap-2 border-b border-white/5 pb-2 text-xs font-bold text-slate-400">
+                <button class="text-accentSky border-b-2 border-sky-400 pb-2 px-1">Manage Schools</button>
+                <button class="hover:text-white pb-2 px-1 opacity-50" @click="alert('Module locked. Accessible only via production key configurations.')">Manage Strands</button>
+                <button class="hover:text-white pb-2 px-1 opacity-50" @click="alert('Module locked. Accessible only via production key configurations.')">Analytics</button>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Total Records</p>
+                    <p class="text-xl font-black text-white mt-0.5" x-text="schoolDatabase.length"></p>
+                </div>
+                <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Public Base</p>
+                    <p class="text-xl font-black text-accentSky mt-0.5">3 Institutions</p>
+                </div>
+                <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Private Base</p>
+                    <p class="text-xl font-black text-accentPurple mt-0.5">3 Institutions</p>
+                </div>
+                <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Server Status</p>
+                    <p class="text-xl font-black text-emerald-400 mt-0.5">Operational</p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-premiumGold">Active Live Node Registry</h3>
+                    <button @click="injectMockSchool()" class="flex items-center gap-1.5 px-3 py-1.5 bg-accentSky hover:bg-sky-400 text-black text-xs font-bold rounded-xl shadow-md transition-all">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add New Institution
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-white/5 bg-cyberDark">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-white/5 text-slate-400 uppercase tracking-wider font-semibold border-b border-white/5">
+                            <tr>
+                                <th class="p-3">School Name</th>
+                                <th class="p-3">Location</th>
+                                <th class="p-3">Type</th>
+                                <th class="p-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 font-medium text-slate-300">
+                            <template x-for="school in schoolDatabase" :key="school.id">
+                                <tr class="hover:bg-white/[0.02] transition-colors">
+                                    <td class="p-3 font-bold text-white" x-text="school.name"></td>
+                                    <td class="p-3" x-text="school.city"></td>
+                                    <td class="p-3">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold" :class="school.type === 'Public' ? 'bg-sky-500/10 text-sky-400' : 'bg-purple-500/10 text-purple-400'" x-text="school.type"></span>
+                                    </td>
+                                    <td class="p-3 text-right">
+                                        <button @click="deleteSchoolNode(school.id)" class="text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 p-1.5 rounded-lg border border-red-500/10 transition-all">
+                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="footer" class="border-t border-white/5 bg-cyberDark pt-16 pb-28 lg:pb-16 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="space-y-3">
+                <span class="font-display font-black text-lg text-white block tracking-wider">ONLINE ENTREPRENEUR</span>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    The advanced educational search ecosystem connecting strands, courses, and schools nationwide to accelerate career journeys from student to earner.
+                </p>
+                <div class="flex items-center gap-2 pt-2 text-[10px] text-slate-400 font-bold tracking-wider">
+                    <span class="w-2 x-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    PLATFORM ONLINE AT REGION CORE NCR
+                </div>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-widest text-premiumGold mb-3 font-display">System Directory</h4>
+                <ul class="space-y-2 text-xs font-medium text-slate-400">
+                    <li><a href="#home" class="hover:text-white transition-colors">Home Base Hub</a></li>
+                    <li><a href="#search" class="hover:text-white transition-colors">Search School Matrices</a></li>
+                    <li><a href="#quick-access" class="hover:text-white transition-colors">SHS Strands Directory</a></li>
+                    <li><a href="#quick-access" class="hover:text-white transition-colors">Academic Tracks Index</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-widest text-premiumGold mb-3 font-display">Ecosystem Modules</h4>
+                <ul class="space-y-2 text-xs font-medium text-slate-400">
+                    <li><a href="#quick-access" class="hover:text-white transition-colors">College Degree Bundles</a></li>
+                    <li><a href="#ai-match" class="hover:text-white transition-colors">Career Guide Mapping</a></li>
+                    <li><a href="#stats" class="hover:text-white transition-colors">Scholarship Finder</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">TESDA Integration Channels</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-widest text-premiumGold mb-3 font-display">Connect with Us</h4>
+                <div class="flex gap-3 text-slate-400">
+                    <a href="#" class="hover:text-accentSky transition-colors"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+                    <a href="#" class="hover:text-accentSky transition-colors"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+                    <a href="#" class="hover:text-accentSky transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+                    <a href="#" class="hover:text-accentSky transition-colors"><i data-lucide="youtube" class="w-4 h-4"></i></a>
+                </div>
+                <p class="text-[10px] text-slate-600 font-medium mt-4 leading-relaxed">
+                    Designed for high-performance mobile and desktop deployment across the Philippines.
+                </p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-white/5 text-center text-xs text-slate-600 font-semibold">
+            &copy; 2026 ONLINE ENTREPRENEUR Platform Architecture Group. All Rights Reserved.
+        </div>
+    </footer>
+
+    <div class="lg:hidden fixed bottom-6 left-4 right-4 z-50 h-16 rounded-2xl bg-slate-950/70 border border-white/10 backdrop-blur-xl flex items-center justify-around px-4 shadow-2xl">
+        <a href="#home" class="flex flex-col items-center justify-center text-slate-400 hover:text-accentSky transition-colors">
+            <i data-lucide="home" class="w-4 h-4"></i>
+            <span class="text-[9px] font-bold mt-1">Home</span>
+        </a>
+        <a href="#search" class="flex flex-col items-center justify-center text-slate-400 hover:text-accentSky transition-colors">
+            <i data-lucide="search" class="w-4 h-4"></i>
+            <span class="text-[9px] font-bold mt-1">Engine</span>
+        </a>
+        <a href="#quick-access" class="flex flex-col items-center justify-center text-slate-400 hover:text-accentSky transition-colors">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+            <span class="text-[9px] font-bold mt-1">Hubs</span>
+        </a>
+        <a href="#ai-match" class="flex flex-col items-center justify-center text-slate-400 hover:text-accentSky transition-colors">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span class="text-[9px] font-bold mt-1">AI Match</span>
+        </a>
+    </div>
+
+    <script>
+        function applicationEngine() {
+            return {
+                // Application Search State Management
+                searchQuery: '',
+                hasSearched: false,
+                searchExamples: ['STEM', 'ABM', 'HUMSS', 'TVL', 'BSIT', 'Nursing', 'Engineering', 'UP', 'PUP', 'RTU', 'FEU', 'UE', 'TIP'],
+                filteredSchools: [],
+                
+                // Admin State Interfaces
+                adminPanelOpen: false,
+
+                // User Framework Authentication Profile Mock
+                userProfile: {
+                    isAuthenticated: true,
+                    name: 'Juan Dela Cruz',
+                    role: 'student'
+                },
+
+                // Interactive Career AI Module Properties
+                aiStep: 1,
+                aiSubject: '',
+                aiInterest: '',
+                aiOutput: { strand: '', track: '', course: '', schools: [] },
+
+                // Structural Local Database Model replicating Firestore documents
+                schoolDatabase: [
+                    {
+                        id: 'up-diliman',
+                        name: 'University of the Philippines Diliman',
+                        region: 'NCR',
+                        province: 'Metro Manila',
+                        city: 'Quezon City',
+                        type: 'Public',
+                        strands: ['STEM', 'HUMSS', 'GAS'],
+                        tracks: ['Academic'],
+                        courses: ['BSCS', 'Engineering', 'Accountancy'],
+                        website: 'https://upd.edu.ph'
+                    },
+                    {
+                        id: 'pup-manila',
+                        name: 'Polytechnic University of the Philippines',
+                        region: 'NCR',
+                        province: 'Metro Manila',
+                        city: 'Manila',
+                        type: 'Public',
+                        strands: ['STEM', 'ABM', 'HUMSS', 'TVL'],
+                        tracks: ['Academic', 'TVL'],
+                        courses: ['BSIT', 'BSCS', 'Accountancy', 'Education'],
+                        website: 'https://pup.edu.ph'
+                    },
+                    {
+                        id: 'rtu-mandaluyong',
+                        name: 'Rizal Technological University',
+                        region: 'NCR',
+                        province: 'Metro Manila',
+                        city: 'Mandaluyong',
+                        type: 'Public',
+                        strands: ['STEM', 'ABM', 'TVL', 'ICT'],
+                        tracks: ['Academic', 'TVL'],
+                        courses: ['BSIT', 'Engineering', 'Education', 'Nursing'],
+                        website: 'https://rtu.edu.ph'
+                    },
+                    {
+                        id: 'feu-manila',
+                        name: 'Far Eastern University',
+                        region: 'NCR',
+                        province: 'Metro Manila',
+                        city: 'Manila',
+                        type: 'Private',
+                        strands: ['STEM', 'ABM', 'HUMSS', 'Sports', 'Arts & Design'],
+                        tracks: ['Academic', 'Sports', 'Arts & Design'],
+                        courses: ['Nursing', 'Accountancy', 'BSCS', 'Criminology'],
+                        website: 'https://feu.edu.ph'
+                    },
+                    {
+                        id: 'ue-manila',
+                        name: 'University of the East',
+                        region: 'NCR',
+                        province: 'Metro Manila',
+                        city: 'Manila',
+                        type: 'Private',
+                        strands: ['STEM', 'ABM', 'HUMSS', 'GAS', 'TVL'],
+                        tracks: ['Academic', 'TVL'],
+                        courses: ['Engineering', 'BSIT', 'Accountancy', 'Nursing'],
+                        website: 'https://ue.edu.ph'
+                    },
+                    {
+                        id: 'tip-manila',
+                        name: 'Technological Institute of the Philippines',
+                        region: 'NCR',
+                        province: 'Metro Manila',
+                        city: 'Manila',
+                        type: 'Private',
+                        strands: ['STEM', 'ABM', 'TVL', 'ICT'],
+                        tracks: ['Academic', 'TVL'],
+                        courses: ['Engineering', 'BSCS', 'BSIT'],
+                        website: 'https://tip.edu.ph'
+                    }
+                ],
+
+                init() {
+                    // Initialize Lucide Icons inside layout components
+                    this.$nextTick(() => { lucide.createIcons(); });
+                },
+
+                // Real-time Search Index Processing Engine
+                executeSearchPipeline() {
+                    const criteria = this.searchQuery.trim().toLowerCase();
+                    if (!criteria) {
+                        this.filteredSchools = [];
+                        this.hasSearched = false;
+                        return;
+                    }
+
+                    this.filteredSchools = this.schoolDatabase.filter(school => {
+                        return (
+                            school.name.toLowerCase().includes(criteria) ||
+                            school.city.toLowerCase().includes(criteria) ||
+                            school.id.toLowerCase().includes(criteria) ||
+                            school.strands.some(s => s.toLowerCase() === criteria) ||
+                            school.tracks.some(t => t.toLowerCase() === criteria) ||
+                            school.courses.some(c => c.toLowerCase() === criteria)
+                        );
+                    });
+                    this.hasSearched = true;
+                    this.$nextTick(() => { lucide.createIcons(); });
+                },
+
+                // Authentication Engine Mock Routing Transitions
+                triggerAuthMock(selectedRole) {
+                    if (selectedRole === 'admin') {
+                        this.userProfile = { isAuthenticated: true, name: 'System Administrator', role: 'admin' };
+                        this.adminPanelOpen = true;
+                    } else {
+                        this.userProfile = { isAuthenticated: true, name: 'Juan Dela Cruz', role: 'student' };
+                        alert('Logged in securely as Student User Profile Node.');
+                    }
+                },
+
+                logoutUser() {
+                    this.userProfile = { isAuthenticated: false, name: '', role: '' };
+                    this.adminPanelOpen = false;
+                },
+
+                // Core Career AI Mapping Mechanics
+                getInterestOptions() {
+                    if (['Math', 'Science', 'Technology'].includes(this.aiSubject)) {
+                        return [
+                            { id: 'swe', label: 'Software Engineering & Computation systems' },
+                            { id: 'healthcare', label: 'Clinical Medicine & Bio-Chemical Sciences' },
+                            { id: 'infra', label: 'Civil Infrastructure & Industrial Planning' }
+                        ];
+                    } else {
+                        return [
+                            { id: 'finance', label: 'Asset Architecture, Valuation & Accounting' },
+                            { id: 'media', label: 'Creative Media Production & Global Communication' },
+                            { id: 'management', label: 'Corporate Operations & Entrepreneurship' }
+                        ];
+                    }
+                },
+
+                calculateAiMatrix() {
+                    let matrixResult = { strand: 'STEM', track: 'Academic', course: 'BS Computer Science', schools: ['UP Diliman', 'PUP Manila', 'RTU Mandaluyong'] };
+                    
+                    if (this.aiInterest === 'finance' || this.aiSubject === 'Business') {
+                        matrixResult = { strand: 'ABM', track: 'Academic', course: 'BS Accountancy', schools: ['PUP Manila', 'FEU Manila', 'UE Manila'] };
+                    } else if (this.aiInterest === 'healthcare') {
+                        matrixResult = { strand: 'STEM', track: 'Academic', course: 'Bachelor of Science in Nursing', schools: ['RTU Mandaluyong', 'FEU Manila', 'UE Manila'] };
+                    } else if (this.aiInterest === 'media' || this.aiSubject === 'Arts') {
+                        matrixResult = { strand: 'HUMSS / Arts & Design', track: 'Arts & Design', course: 'BA Communication Arts', schools: ['UP Diliman', 'FEU Manila'] };
+                    }
+
+                    this.aiOutput = matrixResult;
+                    this.aiStep = 3;
+                },
+
+                resetAiEngine() {
+                    this.aiSubject = '';
+                    this.aiInterest = '';
+                    this.aiStep = 1;
+                },
+
+                // Admin Dashboard Database Manipulations
+                injectMockSchool() {
+                    const newId = 'inst-' + Date.now();
+                    const sampleSchool = {
+                        id: newId,
+                        name: 'De La Salle University Mock Node',
+                        region: 'NCR',
+                        province: 'Metro Manila',
+                        city: 'Manila',
+                        type: 'Private',
+                        strands: ['STEM', 'ABM', 'HUMSS'],
+                        tracks: ['Academic'],
+                        courses: ['BSCS', 'Accountancy', 'Engineering'],
+                        website: 'https://dlsu.edu.ph'
+                    };
+                    this.schoolDatabase.push(sampleSchool);
+                    this.executeSearchPipeline();
+                    this.$nextTick(() => { lucide.createIcons(); });
+                },
+
+                deleteSchoolNode(targetId) {
+                    this.schoolDatabase = this.schoolDatabase.filter(s => s.id !== targetId);
+                    this.executeSearchPipeline();
+                    this.$nextTick(() => { lucide.createIcons(); });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
