@@ -1,2 +1,2 @@
-# Students-Way-Path
-students way path
+# Edu-Web
+Edu Web
